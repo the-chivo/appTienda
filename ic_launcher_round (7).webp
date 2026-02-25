@@ -1,47 +1,145 @@
 package com.example.myapplication.ui
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.ejercicioclase.ui.theme.EjercicioClaseTheme
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.R
 
-class PasarelaPago : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            EjercicioClaseTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting2(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+// ============================================
+// PANTALLA DE PRODUCTOS - SOLO GALERÍA
+// ============================================
+
+@Composable
+fun Productos(navController: NavController) {
+
+    // Lista simple de productos (solo datos para mostrar)
+    val productos = listOf(
+        ProductoSimple("CBD Oil", "24.99€"),
+        ProductoSimple("Crema CBD", "18.50€"),
+        ProductoSimple("Gominolas", "12.99€"),
+        ProductoSimple("Cápsulas", "29.99€"),
+        ProductoSimple("Té CBD", "8.99€"),
+        ProductoSimple("Bálsamo", "15.00€"),
+        ProductoSimple("Aceite 10%", "34.99€"),
+        ProductoSimple("Champú", "11.50€")
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        // Título
+        Text(
+            text = "Nuestros Productos",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Grid de productos (2 columnas)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(productos) { producto ->
+                ProductoCardSimple(
+                    nombre = producto.nombre,
+                    precio = producto.precio
+                )
             }
         }
     }
 }
 
+// ============================================
+// DATA CLASS SIMPLE (dentro del mismo archivo)
+// ============================================
+
+data class ProductoSimple(
+    val nombre: String,
+    val precio: String
+)
+
+// ============================================
+// CARD SIMPLE (solo visual, sin botones)
+// ============================================
+
 @Composable
-fun Greeting2(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun ProductoCardSimple(
+    nombre: String,
+    precio: String,
+    imagen: Int = R.drawable.ic_launcher_foreground
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(12.dp)
+        ) {
+            // Imagen
+            Image(
+                painter = painterResource(imagen),
+                contentDescription = nombre,
+                modifier = Modifier
+                    .size(100.dp)
+                    .padding(8.dp)
+            )
+
+            // Nombre
+            Text(
+                text = nombre,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            // Precio
+            Text(
+                text = precio,
+                color = Color.Green,
+                fontWeight = FontWeight.Medium,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
 }
 
-@Preview(showBackground = true)
+// ============================================
+// PREVIEWS
+// ============================================
+
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingPreview2() {
-    EjercicioClaseTheme {
-        Greeting2("Android")
+fun ProductosPreview() {
+    MaterialTheme {
+        Productos(navController = rememberNavController())
+    }
+}
+
+@Preview(showBackground = true, name = "Card simple")
+@Composable
+fun ProductoCardSimplePreview() {
+    MaterialTheme {
+        ProductoCardSimple(
+            nombre = "CBD Oil",
+            precio = "24.99€"
+        )
     }
 }

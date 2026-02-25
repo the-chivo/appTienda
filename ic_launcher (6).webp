@@ -1,5 +1,6 @@
 package com.example.myapplication.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,21 +10,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.data.Partido
+import com.example.myapplication.R
 
 @Composable
-fun PartidosLigaScreen(navController: NavController) {
-    val partidos = listOf(
-        Partido("Real Madrid", "Barcelona", "20:00", "La Liga"),
-        Partido("Atlético", "Sevilla", "18:30", "La Liga"),
-        Partido("Valencia", "Villarreal", "16:00", "La Liga"),
-        Partido("Betis", "Real Sociedad", "21:00", "La Liga")
+fun ProductHistory(navController: NavController) {
+    val productosVistos = listOf(
+        "Producto A" to "15.99€",
+        "Producto B" to "23.50€",
+        "Producto C" to "8.99€",
+        "Producto D" to "45.00€"
     )
 
     Column(
@@ -32,7 +33,7 @@ fun PartidosLigaScreen(navController: NavController) {
             .padding(16.dp)
     ) {
         Text(
-            text = "Partidos de La Liga",
+            text = "Historial de Productos",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -40,95 +41,54 @@ fun PartidosLigaScreen(navController: NavController) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(partidos) { partido ->
-                PartidoCard(partido = partido)
+            items(productosVistos) { (nombre, precio) ->
+                HistoryItem(nombre = nombre, precio = precio)
             }
         }
     }
 }
 
 @Composable
-fun PartidoCard(partido: Partido) {
+fun HistoryItem(nombre: String, precio: String) {
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = partido.liga,
-                color = Color.Gray,
-                style = MaterialTheme.typography.labelSmall
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = nombre,
+                modifier = Modifier.size(60.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Equipo local
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = partido.equipoLocal,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                // VS
-                Text(
-                    text = "VS",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red
-                )
-
-                // Equipo visitante
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = partido.equipoVisitante,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = nombre, fontWeight = FontWeight.Bold)
+                Text(text = "Visto hace 2 días", style = MaterialTheme.typography.bodySmall)
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
             Text(
-                text = partido.hora,
-                color = Color.Green,
-                fontWeight = FontWeight.Medium
+                text = precio,
+                fontWeight = FontWeight.Bold,
+                color = androidx.compose.ui.graphics.Color.Green
             )
         }
     }
 }
 
 // ============================================
-// PREVIEW PARA PARTIDOS
+// PREVIEW PARA HISTORIAL
 // ============================================
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PartidosLigaScreenPreview() {
+fun ProductHistoryPreview() {
     MaterialTheme {
-        PartidosLigaScreen(navController = rememberNavController())
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PartidoCardPreview() {
-    MaterialTheme {
-        PartidoCard(
-            partido = Partido(
-                equipoLocal = "Real Madrid",
-                equipoVisitante = "Barcelona",
-                hora = "20:00",
-                liga = "La Liga"
-            )
-        )
+        ProductHistory(navController = rememberNavController())
     }
 }
