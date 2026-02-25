@@ -1,0 +1,170 @@
+package com.example.myapplication.ui
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+
+@Composable
+fun Configuracion(navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Configuración",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Notificaciones
+        SettingItemWithSwitch(
+            icon = Icons.Default.Notifications,
+            title = "Notificaciones",
+            description = "Recibir alertas de ofertas"
+        )
+
+        // Modo oscuro - CAMBIADO a Settings (rueda de configuración)
+        SettingItemWithSwitch(
+            icon = Icons.Default.Settings,  // ← CAMBIADO
+            title = "Modo Oscuro",
+            description = "Cambiar tema de la app"
+        )
+
+        // Idioma - CAMBIADO a Menu (tres líneas)
+        SettingItem(
+            icon = Icons.Default.Menu,  // ← CAMBIADO
+            title = "Idioma",
+            description = "Español"
+        )
+
+        // Privacidad - CAMBIADO a Lock (cerradura)
+        SettingItem(
+            icon = Icons.Default.Lock,  // ← CAMBIADO
+            title = "Privacidad",
+            description = "Gestionar permisos"
+        )
+
+        Divider(modifier = Modifier.padding(vertical = 16.dp))
+
+        // Acerca de - CAMBIADO a Info (i)
+        SettingItem(
+            icon = Icons.Default.Info,  // ← Este sí existe
+            title = "Acerca de",
+            description = "Versión 1.0.0"
+        )
+
+        // Cerrar sesión - CAMBIADO a ExitToApp
+        SettingItem(
+            icon = Icons.Default.ExitToApp,  // ← CAMBIADO
+            title = "Cerrar Sesión",
+            description = "Salir de la cuenta",
+            isDestructive = true
+        )
+    }
+}
+
+@Composable
+fun SettingItem(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    isDestructive: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { }
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = if (isDestructive) MaterialTheme.colorScheme.error
+            else MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (isDestructive) MaterialTheme.colorScheme.error
+                else MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowRight,  // ← CAMBIADO
+            contentDescription = "Ir",
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+fun SettingItemWithSwitch(
+    icon: ImageVector,
+    title: String,
+    description: String
+) {
+    var checked by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        Switch(
+            checked = checked,
+            onCheckedChange = { checked = it }
+        )
+    }
+}
+
+// ============================================
+// PREVIEWS
+// ============================================
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun ConfiguracionPreview() {
+    MaterialTheme {
+        Configuracion(navController = rememberNavController())
+    }
+}

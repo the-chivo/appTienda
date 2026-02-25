@@ -1,0 +1,655 @@
+package com.example.myapplication.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.myapplication.R
+
+
+import androidx.compose.foundation.layout.*
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+
+
+// ============================================
+// PANTALLA PRINCIPAL - HOME
+// ============================================
+
+@Composable
+fun HomeScreen(navController: NavController) {
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        // Contenido scrolleable
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 100.dp) // Espacio para la barra inferior
+        ) {
+            item { TopBar() }
+            item { SectionTitle("Ofertas del día") }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { OffersCarousel() }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Banner() }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { CategoriesSection() }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { SectionTitle("Productos destacados") }
+            item { ProductsCarousel() }
+        }
+
+        // Barra de navegación inferior (siempre visible abajo)
+        BottomNav(
+            navController = navController,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
+
+// ============================================
+// BARRA SUPERIOR CON BÚSQUEDA
+// ============================================
+
+@Composable
+fun TopBar() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Logo
+        Image(
+            painter = painterResource(R.drawable.ic_launcher_foreground),
+            contentDescription = "Logo",
+            modifier = Modifier.size(48.dp)
+        )
+
+        // Campo de búsqueda
+        SearchField(
+            label = "Buscar...",
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 8.dp)
+        )
+
+        // Menú hamburguesa
+        Image(
+            painter = painterResource(R.drawable.ic_launcher_foreground),
+            contentDescription = "Menú",
+            modifier = Modifier
+                .size(48.dp)
+                .clickable { /* TODO: Abrir menú lateral */ }
+        )
+    }
+}
+
+@Composable
+fun SearchField(label: String, modifier: Modifier = Modifier) {
+    var search by remember { mutableStateOf("") }
+
+    TextField(
+        value = search,
+        onValueChange = { search = it },
+        label = { Text(text = label) },
+        singleLine = true,
+        modifier = modifier
+    )
+}
+
+// ============================================
+// CARRUSEL DE OFERTAS (LazyRow horizontal)
+// ============================================
+
+@Composable
+fun OffersCarousel() {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(4) { index ->
+            OfferCard(offerNumber = index + 1)
+        }
+    }
+}
+
+@Composable
+fun OfferCard(offerNumber: Int) {
+    Card(
+        modifier = Modifier
+            .width(120.dp)
+            .height(80.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Oferta $offerNumber",
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+// ============================================
+// BANNER PROMOCIONAL
+// ============================================
+
+@Composable
+fun Banner() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp)
+            .padding(horizontal = 16.dp),
+        shape = RectangleShape
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "BANNER PROMOCIONAL",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+// ============================================
+// SECCIÓN DE CATEGORÍAS (con botón Liga)
+// ============================================
+
+@Composable
+fun CategoriesSection() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        // Categoría 1
+        CategoryItem(icon = R.drawable.ic_launcher_foreground, name = "Mascotas")
+
+        // Categoría 2
+        CategoryItem(icon = R.drawable.ic_launcher_foreground, name = "Accesorios")
+
+        // Botón especial "La Liga" (más grande y redondo)
+        LigaButton()
+    }
+}
+
+@Composable
+fun CategoryItem(icon: Int, name: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Image(
+            painter = painterResource(icon),
+            contentDescription = name,
+            modifier = Modifier.size(60.dp)
+        )
+        Text(text = name, fontSize = 12.sp)
+    }
+}
+
+@Composable
+fun LigaButton() {
+    FloatingActionButton(
+        onClick = { /* TODO: Navegar a PartidosLiga */ },
+        containerColor = Color.Red,
+        shape = CircleShape,
+        modifier = Modifier.size(80.dp)
+    ) {
+        Text(
+            text = "La\nLiga\nGratis",
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp
+        )
+    }
+}
+
+// ============================================
+// CARRUSEL DE PRODUCTOS
+// ============================================
+
+@Composable
+fun ProductsCarousel() {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(5) { index ->
+            ProductCard(productNumber = index + 1)
+        }
+    }
+}
+
+@Composable
+fun ProductCard(productNumber: Int) {
+    Card(
+        modifier = Modifier.width(150.dp)
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "Producto $productNumber",
+                modifier = Modifier
+                    .height(120.dp)
+                    .fillMaxWidth()
+            )
+            Text(
+                text = "Producto $productNumber",
+                modifier = Modifier.padding(8.dp),
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "10.99€",
+                color = Color.Green,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+    }
+}
+
+// ============================================
+// TÍTULO DE SECCIÓN REUTILIZABLE
+// ============================================
+
+@Composable
+fun SectionTitle(title: String) {
+    Text(
+        text = title,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+// ============================================
+// BARRA DE NAVEGACIÓN INFERIOR
+// ============================================
+
+@Composable
+fun BottomNav(navController: NavController, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(70.dp)
+            .background(Color.Gray)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Home (pantalla actual)
+        NavItem(
+            icon = R.drawable.ic_launcher_foreground,
+            label = "Home",
+            onClick = { /* Ya estamos en Home */ }
+        )
+
+        // Productos vistos
+        NavItem(
+            icon = R.drawable.ic_launcher_foreground,
+            label = "Vistos",
+            onClick = { navController.navigate("history") }
+        )
+
+        // Carrito
+        NavItem(
+            icon = R.drawable.ic_launcher_foreground,
+            label = "Carrito",
+            onClick = { navController.navigate("cart") }
+        )
+
+        // Perfil
+        NavItem(
+            icon = R.drawable.ic_launcher_foreground,
+            label = "Perfil",
+            onClick = { navController.navigate("profile") }
+        )
+
+        NavItem(
+            icon = R.drawable.ic_launcher_foreground,
+            label = "Mascota",
+            onClick = { navController.navigate("mascot") }
+        )
+    }
+}
+
+@Composable
+fun NavItem(icon: Int, label: String, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick)
+    ) {
+        Image(
+            painter = painterResource(icon),
+            contentDescription = label,
+            modifier = Modifier.size(32.dp)
+        )
+        Text(text = label, fontSize = 12.sp, color = Color.White)
+    }
+}
+
+/*
+class Home : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            EjercicioClaseTheme {
+                HomeScreen()
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeScreen(){
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ){
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 80.dp)
+        ) {
+            item{
+                TopBar()
+            }
+            item{
+                SectionTitle("Ofertas del día")
+            }
+            item{
+                Spacer(
+                    modifier = Modifier.height(20.dp)
+                )
+            }
+            item{
+                Banner()
+            }
+            item{
+                Spacer(
+                    modifier = Modifier.height(20.dp)
+                )
+            }
+            item{
+                ProductCorrousel()
+            }
+        }
+
+
+        //Haría de barra de navegación
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+
+        ){
+            BottomNav()
+
+            //TODO Ponerlo en su sitio
+            FloatingButton()
+        }
+    }
+}
+
+@Composable
+fun Banner(){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(150.dp),
+        shape = RectangleShape
+    ) {
+        //TODO Implementar imagen
+    }
+}
+
+@Composable
+fun BottomNav(){
+    Column(
+
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 15.dp)
+                .fillMaxWidth()
+                .height(70.dp)
+                .background(Color.Gray),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "",
+                modifier = Modifier
+                    .height(64.dp)
+                    .width(64.dp)
+                    .clickable {
+                        //TODO Nico con los clickables
+                    }
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "",
+                modifier = Modifier
+                    .height(64.dp)
+                    .width(64.dp)
+                    .clickable {
+
+                    }
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "",
+                modifier = Modifier
+                    .height(64.dp)
+                    .width(64.dp)
+                    .clickable {
+
+                    }
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "",
+                modifier = Modifier
+                    .height(64.dp)
+                    .width(64.dp)
+                    .clickable {
+
+                    }
+            )
+        }
+    }
+}
+
+@Composable
+fun SearchField(label : String, modifier: Modifier = Modifier){
+    //Hay que hacer una variable busqueda que sera byremember mutable state
+    var search by remember { mutableStateOf("") }
+
+    TextField(
+        value = search,
+        onValueChange = {search = it},
+        label = { Text(text = label) },
+        singleLine = true,
+    )
+
+}
+
+@Composable
+fun ProductCorrousel(){
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(3){
+            Card(
+                modifier = Modifier
+            ){
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_launcher_foreground),
+                        contentDescription = "Producto 1",
+                        modifier = Modifier
+                            .height(150.dp)
+                            .width(150.dp)
+                    )
+                    Text(
+                        text = "CBD",
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductCard(){
+
+}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun Preview(){
+    EjercicioClaseTheme() {
+        HomeScreen()
+    }
+}
+
+@Composable
+fun ProductSection(){
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 80.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        items(3){
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = "Sample product",
+                modifier = Modifier
+                    .height(200.dp)
+                    .width(150.dp)
+            )
+        }
+    }
+}
+
+//Se usa para poner los títulos a las secciones donde lo queramos utilizar
+@Composable
+fun SectionTitle(title : String){
+    Text(
+        text = title,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+fun TopBar(){
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_launcher_foreground),
+            contentDescription = "Logo",
+            modifier = Modifier
+                .height(64.dp)
+                .width(64.dp),
+        )
+
+        SearchField("Buscar...")
+
+        Image(
+            painter = painterResource(R.drawable.ic_launcher_foreground),
+            contentDescription = "Menu",
+            modifier = Modifier
+                .height(64.dp)
+                .width(64.dp)
+        )
+    }
+}
+
+@Composable
+fun FloatingButton(){
+    FloatingActionButton(
+        onClick = {
+            //TODO Enviar a la promoción
+        },
+        containerColor = Color.Red,
+        shape = CircleShape,
+        modifier = Modifier
+            .height(100.dp)
+            .width(100.dp)
+    ) {
+        Text(
+            text = "Toda \n La Liga \n gratis",
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewFloatingButton(){
+    EjercicioClaseTheme() {
+        FloatingButton()
+    }
+}
+
+*/
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+        HomeScreen(navController = rememberNavController())
+}

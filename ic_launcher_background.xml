@@ -1,0 +1,154 @@
+package com.example.myapplication.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.R
+
+@Composable
+fun CartScreen(navController: NavController) {
+    val carrito = listOf(
+        Triple("Producto 1", "10.99€", 2),
+        Triple("Producto 2", "5.50€", 1),
+        Triple("Producto 3", "15.00€", 1)
+    )
+
+    val total = carrito.sumOf { it.second.replace("€", "").toDouble() * it.third }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Carrito de Compra",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(carrito) { (nombre, precio, cantidad) ->
+                CartItem(nombre = nombre, precio = precio, cantidad = cantidad)
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Total
+        Card(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Total:", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(
+                    text = "%.2f€".format(total),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = Color.Green
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Realizar Pedido")
+        }
+    }
+}
+
+@Composable
+fun CartItem(nombre: String, precio: String, cantidad: Int) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_foreground),
+                contentDescription = nombre,
+                modifier = Modifier.size(60.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = nombre, fontWeight = FontWeight.Bold)
+                Text(text = precio, color = Color.Green)
+            }
+
+            Text(
+                text = "x$cantidad",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        }
+    }
+}
+
+// ============================================
+// PREVIEW PARA CARRITO
+// ============================================
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun CartScreenPreview() {
+    MaterialTheme {
+        CartScreen(navController = rememberNavController())
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CartItemPreview() {
+    MaterialTheme {
+        CartItem(nombre = "Producto Ejemplo", precio = "12.99€", cantidad = 2)
+    }
+}
+
+@Preview(showBackground = true, name = "Carrito Vacío")
+@Composable
+fun CartScreenEmptyPreview() {
+    MaterialTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Carrito de Compra", style = MaterialTheme.typography.headlineMedium)
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(text = "Tu carrito está vacío", color = Color.Gray)
+        }
+    }
+}

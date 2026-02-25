@@ -1,0 +1,44 @@
+package com.example.myapplication.ui
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
+@Composable
+fun Navigation() {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = "splash"  // ← CAMBIADO: la app empieza en splash
+    ) {
+        composable("splash") {
+            Splash(navController)
+        }
+        composable("login") {
+            LoginScreen(navController)
+        }
+        composable("home") {
+            HomeScreen(navController)
+        }
+        composable("history") {
+            ProductHistory(navController)
+        }
+        composable("cart") {
+            CartScreen(navController)
+        }
+        composable("profile") {
+            ProfileScreen(navController)
+        }
+        composable("liga") {
+            PartidosLigaScreen(navController)
+        }
+        composable("settings") {
+            Configuracion(navController)
+        }
+        composable("productos") {
+            Productos(navController)
+        }
+    }
+}
